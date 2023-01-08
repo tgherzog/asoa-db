@@ -1,0 +1,43 @@
+{% set page_title = boat.name %}
+{% set status = {'GOOD': 'Good', 'LOST': 'Lost', 'RENO': 'Being Renovated', 'UNK': 'Unknown'} %}
+{% extends 'default.html' %}
+{% block content %}
+{% include 'breadcrumb.html' %}
+{% if boat.owners | length > 0 %}
+{% set owner_name = boat.owners[0].owner_name | e %}
+{% set acq_date   = boat.owners[0].acquired %}
+{% else %}
+{% set owner_name = '<em>Unknown</em>' %}
+{% set acq_date = '' %}
+{% endif %}
+<h3>{{ boat.name }}</h3>
+<table class="table asoa-table detail-table">
+<tr><td>Boat Name</td><td>{{ boat.name }}</td></tr>
+<tr><td>Current Owner</td><td>{{ owner_name | safe }}</td></tr>
+{% if acq_date and acq_date | upper != 'UNCONFIRMED' %}
+<tr><td>Acquired</td><td>{{ acq_date | safe }}</td></tr>
+{% endif %}
+<tr><td>Hull</td><td>{{ boat.hull }}</td></tr>
+<tr><td>Sail #</td><td>{{ boat.sailnum }}</td></tr>
+<tr><td>Rig</td><td>{{ boat.rig }}</td></tr>
+<tr><td>Color</td><td>{{ boat.color }}</td></tr>
+<tr><td>Engine</td><td>{{ [boat.engine_type, boat.engine_desc] | select | join('/')  }}</td></tr>
+<tr><td>Location</td><td>{{ boat.berth }}</td></tr>
+<tr><td>Status</td><td>{{ status[boat.status] }}</td></tr>
+{% if boat.status == 'LOST' %}
+<tr><td>Epitaph</td><td>{{ boat.epitaph }}</td></tr>
+{% endif %}
+{% if boat.owners | length > 1 %}
+<tr><td>Owner History</td>
+<td>
+<table class="owners">
+<tr><th>Name</th><th class="text-center">Acquired</th></tr>
+{% for owner in boat.owners %}
+<tr><td>{{ owner.owner_name }}</td><td class="text-center">{{ owner.acquired }}</td></tr>
+{% endfor %}
+</td></tr>
+</table>
+</td></tr>
+{% endif %}
+</table>
+{% endblock %}

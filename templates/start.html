@@ -1,0 +1,16 @@
+{% extends 'default.html' %}
+{% block content %}
+
+<h2>ASOA Database</h2>
+<form method="GET" action="/search">
+<div class="mb-3">
+  <label for="searchText" class="form-label">Search for a boat name, hull number or owner</label>
+  <input type="text" class="form-control" name="q" id="searchText"/>
+</div>
+<div class="mb-3 text-center search-buttons">
+  <input class="btn btn-primary" type="submit" value="Search"/>
+  <span>or</span>
+  <a class="btn btn-primary" href="/list">Show All Seabreezes</a>
+</div>
+</form>
+{% endblock %}

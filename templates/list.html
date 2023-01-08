@@ -1,0 +1,32 @@
+{% extends 'default.html' %}
+{% block content %}
+{% include 'breadcrumb.html' %}
+{% if page_title %}
+<h3>{{ page_title }}</h3>
+{% endif %}
+{% if search_term %}
+<p class="search_term">You searched for <em>"{{ search_term }}"</em></p>
+{% endif %}
+{% if boats.values() | selectattr("status", "eq", "LOST") | list | length > 0 %}
+<p><small>Boats known to be lost are <span class="status-lost">displayed in gray.</span></small></p>
+{% endif %}
+{% if boats | length > 0 %}
+<table class="table asoa-table">
+<tr><th class="hull">Hull</th><th class="name">Name</th><th class="owner">Owned By</th></tr>
+{% for hull,boat in boats.items() %}
+{% if boat.owners | length > 0 %}
+{% set owner_name = boat.owners[0].owner_name %}
+{% else %}
+{% set owner_name = '<em>Unknown<em>' %}
+{% endif %}
+<tr class="{{ 'status-' + boat.status | default('none') | lower }}">
+    <td class="hull"><a href="/detail/{{ hull }}">{{ hull }}</td>
+    <td class="name"><a href="/detail/{{ hull }}">{{ boat.name }}</a></td>
+    <td class="owner">{{ owner_name | safe }}</td>
+</tr>
+{% endfor %}
+</table>
+{% else %}
+<p class="text-center">No matching results</p>
+{% endif %}
+{% endblock %}

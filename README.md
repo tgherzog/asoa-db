@@ -9,7 +9,7 @@ read using [openpyxl][openpyxl].
 
 The python component simply defines endpoints, loads the spreadsheet
 and provides rudimentary search. Most of the "guts" of the program are
-implemented through [jinja templates](tree/master/templates).
+implemented through [jinja templates](templates).
 
 If your unfamiliar with Flask, the key thing to understand in `app.py` is that it mostly
 just loads the spreadsheet and uses `render_template` to load one of the Jinja

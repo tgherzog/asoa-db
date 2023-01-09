@@ -1,9 +1,11 @@
 
 import flask
+import jinja2
 from werkzeug.middleware.proxy_fix import ProxyFix
 from flask_assets import Environment, Bundle
-from markupsafe import escape as e
+import markupsafe
 from datetime import datetime
+from markdown import markdown
 import os
 import re
 
@@ -19,6 +21,11 @@ assets.append_path('assets/scss')
 assets.url_expire = False   # disable dynamic CSS loading
 scss = Bundle('custom.scss', filters='pyscss', output='css/custom.css')
 assets.register('scss_site', scss)
+
+@app.template_filter('markdown')
+def app_markdown_filter(s):
+    
+    return markupsafe.Markup(markdown(s))
 
 @app.route('/')
 def app_start():

@@ -25,7 +25,7 @@
 <tr><td>Location</td><td>{{ boat.berth }}</td></tr>
 <tr><td>Status</td><td>{{ status[boat.status] }}</td></tr>
 {% if boat.status == 'LOST' %}
-<tr><td>Epitaph</td><td>{{ boat.epitaph }}</td></tr>
+<tr><td>Epitaph</td><td>{{ boat.epitaph | markdown }}</td></tr>
 {% endif %}
 {% if boat.owners | length > 1 %}
 <tr><td>Owner History</td>

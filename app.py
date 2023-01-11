@@ -1,6 +1,5 @@
 
 import flask
-import jinja2
 from werkzeug.middleware.proxy_fix import ProxyFix
 from flask_assets import Environment, Bundle
 import markupsafe

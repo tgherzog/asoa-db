@@ -7,17 +7,23 @@
 {% if search_term %}
 <p class="search_term">You searched for <em>"{{ search_term }}"</em></p>
 {% endif %}
+{% if boats.values() | selectattr("status", "eq", "UNK") | list | length > 0 %}
+<p><small>Boats <span class="status-unk">displayed in blue</span> are known to have been sold or listed for sale, but there is no information about the current owner.
+If you have information about these boats, please email {{ contact_asoa() }}.</small></p>
+{% endif %}
 {% if boats.values() | selectattr("status", "eq", "LOST") | list | length > 0 %}
-<p><small>Boats known to be lost are <span class="status-lost">displayed in gray.</span></small></p>
+<p><small>Boats <span class="status-lost">displayed in gray</span> are known to be lost. View the boat record for more details.</small></p>
 {% endif %}
 {% if boats | length > 0 %}
 <table class="table asoa-table">
 <tr><th class="hull">Hull</th><th class="name">Name</th><th class="owner">Owned By</th></tr>
 {% for hull,boat in boats.items() %}
-{% if boat.owners | length > 0 %}
+{% if boat.status == 'LOST' -%}
+{% set owner_name = '' -%}
+{% elif boat.status != 'UNK' and boat.owners | length > 0 %}
 {% set owner_name = boat.owners[0].owner_name %}
 {% else %}
-{% set owner_name = '<em>Unknown<em>' %}
+{% set owner_name = '<strong class="unk">Unknown<strong>' %}
 {% endif %}
 <tr class="{{ 'status-' + boat.status | default('none') | lower }}">
     <td class="hull"><a href="/detail/{{ hull }}">{{ hull }}</td>

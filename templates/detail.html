@@ -3,12 +3,15 @@
 {% extends 'default.html' %}
 {% block content %}
 {% include 'breadcrumb.html' %}
-{% if boat.owners | length > 0 %}
-{% set owner_name = boat.owners[0].owner_name | e %}
-{% set acq_date   = boat.owners[0].acquired %}
+{% if boat.status == 'LOST' -%}
+{% set owner_name = '' -%}
+{% set acq_date = '' -%}
+{% elif boat.status == 'UNK' or boat.owners | length == 0 %}
+{% set owner_name = '<strong class="unk">Unknown</strong><br/><small>Please contact {} if you know the owner</small>'.format(contact_asoa()) -%}
+{% set acq_date = '' -%}
 {% else %}
-{% set owner_name = '<em>Unknown</em>' %}
-{% set acq_date = '' %}
+{% set owner_name = boat.owners[0].owner_name | escape %}
+{% set acq_date   = boat.owners[0].acquired %}
 {% endif %}
 <h3>{{ boat.name }}</h3>
 <table class="table asoa-table detail-table">
@@ -24,12 +27,14 @@
 <tr><td>Engine</td><td>{{ [boat.engine_type, boat.engine_desc] | select | join('/')  }}</td></tr>
 <tr><td>Location</td><td>{{ boat.berth }}</td></tr>
 <tr><td>Status</td><td>{{ status[boat.status] }}</td></tr>
+<tr><td>Latest Information</td><td>{{ boat.latest_info | markdown }}</td></tr>
 {% if boat.status == 'LOST' %}
 <tr><td>Epitaph</td><td>{{ boat.epitaph | markdown }}</td></tr>
 {% endif %}
-{% if boat.owners | length > 1 %}
+{% if boat.status in ['LOST', 'UNK'] or boat.owners | length > 1 %}
 <tr><td>Owner History</td>
 <td>
+{% if boat.owners | length > 0 %}
 <table class="owners">
 <tr><th>Name</th><th class="text-center">Acquired</th></tr>
 {% for owner in boat.owners %}
@@ -37,6 +42,7 @@
 {% endfor %}
 </td></tr>
 </table>
+{% endif %}
 </td></tr>
 {% endif %}
 </table>

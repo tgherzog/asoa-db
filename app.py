@@ -26,6 +26,25 @@ def app_markdown_filter(s):
     
     return markupsafe.Markup(markdown(s))
 
+@app.context_processor
+def context_processor():
+    email = 'seabreezeowners@gmail.com'
+
+    def email_link(title=None):
+        if not title:
+            title = email
+
+        return markupsafe.Markup('<a href="mailto:{}">{}</a>'.format(email, title))
+
+    return {
+      # global variables
+      'asoa_email': email,
+
+      # custom functions
+      'contact_asoa': email_link
+    }
+
+
 @app.route('/')
 def app_start():
 
@@ -100,7 +119,7 @@ def db_load(id=None, q=None):
     boat_db = {}
     for row in boats.iter_rows(2):
         boat = {'owners': []}
-        for key in ['hull', 'name', 'status', 'rig', 'serial', 'color', 'engine_type', 'engine_desc', 'berth', 'epitaph', 'notes']:
+        for key in ['hull', 'name', 'status', 'rig', 'serial', 'color', 'engine_type', 'engine_desc', 'berth', 'epitaph', 'latest_info']:
             boat[key] = get_value(boats, row, key)
 
         boat['hull'] = str(boat['hull'])

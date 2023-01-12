@@ -93,7 +93,15 @@ h1 {
   background: lightgray;
 }
 
-span.status-lost {
+.status-unk {
+  background: #94f4f4;
+}
+
+strong.unk {
+  color: $alt_color;
+}
+
+span.status-unk, span.status-lost {
   display: inline-block;
   padding: 0 0.25em;
 }

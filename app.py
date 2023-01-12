@@ -136,7 +136,8 @@ def db_load(id=None, q=None):
 
         owner['hull'] = str(owner['hull'])
         if type(owner['acquired']) is datetime:
-            owner['acquired'] = owner['acquired'].strftime('%m/%d/%Y')
+            # just show the year
+            owner['acquired'] = owner['acquired'].strftime('%Y')
 
         if owner['hull'] in boat_db:
             boat_db[owner['hull']]['owners'].insert(0, owner)

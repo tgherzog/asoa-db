@@ -17,7 +17,7 @@
 <table class="table asoa-table detail-table">
 <tr><td>Boat Name</td><td>{{ boat.name }}</td></tr>
 <tr><td>Current Owner</td><td>{{ owner_name | safe }}</td></tr>
-{% if acq_date and acq_date | upper != 'UNCONFIRMED' %}
+{% if acq_date and acq_date | upper != 'NA' %}
 <tr><td>Acquired</td><td>{{ acq_date | safe }}</td></tr>
 {% endif %}
 <tr><td>Hull</td><td>{{ boat.hull }}</td></tr>

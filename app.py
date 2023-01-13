@@ -46,6 +46,7 @@ def context_processor():
       # global variables
       'asoa_email': email,
       'db_datestamp': config['db_lastmod'].strftime('%m/%d/%Y %I:%M%p UTC'),
+      'db_update_form': 'https://forms.gle/usB89vY9sc5U6adG8',
 
       # custom functions
       'contact_asoa': email_link

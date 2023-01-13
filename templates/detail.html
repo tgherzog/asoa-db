@@ -7,7 +7,7 @@
 {%    set owner_name = '' -%}
 {%    set acq_date = '' -%}
 {% elif boat.status == 'UNK' or boat.owners | length == 0 -%}
-{%    set owner_name = '<strong class="unk">Unknown</strong><br/><small>Please contact {} if you know the owner</small>'.format(contact_asoa()) -%}
+{%    set owner_name = '<strong class="unk">Unknown</strong><br/><small>Please <a target=_blank href="{}">complete this online form</a> if you know the owner</small>'.format(db_update_form) -%}
 {%    set acq_date = '' -%}
 {% else -%}
 {%    set owner_name = boat.owners[0].owner_name | escape -%}

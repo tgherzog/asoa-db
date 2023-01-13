@@ -9,7 +9,7 @@
 {% endif %}
 {% if boats.values() | selectattr("status", "eq", "UNK") | list | length > 0 %}
 <p><small>Boats <span class="status status-unk">displayed in orange</span> are known to have been sold or listed for sale, but there is no information about the current owner.
-If you have information about these boats, please email {{ contact_asoa() }}.</small></p>
+If you have information about these boats, please <a target=_blank href="{{ db_update_form }}">use this online form</a> to send us updates.</small></p>
 {% endif %}
 {% if boats.values() | selectattr("status", "eq", "SALE") | list | length > 0 %}
 <p><small>Boats <span class="status status-sale">displayed in green</span> are listed for sale according to latest reports. View the boat record for more details.</small></p>

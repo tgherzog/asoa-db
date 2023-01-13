@@ -8,11 +8,14 @@
 <p class="search_term">You searched for <em>"{{ search_term }}"</em></p>
 {% endif %}
 {% if boats.values() | selectattr("status", "eq", "UNK") | list | length > 0 %}
-<p><small>Boats <span class="status-unk">displayed in blue</span> are known to have been sold or listed for sale, but there is no information about the current owner.
+<p><small>Boats <span class="status status-unk">displayed in orange</span> are known to have been sold or listed for sale, but there is no information about the current owner.
 If you have information about these boats, please email {{ contact_asoa() }}.</small></p>
 {% endif %}
+{% if boats.values() | selectattr("status", "eq", "SALE") | list | length > 0 %}
+<p><small>Boats <span class="status status-sale">displayed in green</span> are listed for sale according to latest reports. View the boat record for more details.</small></p>
+{% endif %}
 {% if boats.values() | selectattr("status", "eq", "LOST") | list | length > 0 %}
-<p><small>Boats <span class="status-lost">displayed in gray</span> are known to be lost. View the boat record for more details.</small></p>
+<p><small>Boats <span class="status status-lost">displayed in gray</span> are known to be lost. View the boat record for more details.</small></p>
 {% endif %}
 {% if boats | length > 0 %}
 <table class="table asoa-table">

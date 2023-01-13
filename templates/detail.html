@@ -1,24 +1,29 @@
 {% set page_title = boat.name %}
-{% set status = {'GOOD': 'Good', 'LOST': 'Lost', 'RENO': 'Being Renovated', 'UNK': 'Unknown'} %}
+{% set status = {'GOOD': 'Good', 'LOST': 'Lost', 'RENO': 'Being Renovated', 'SALE': 'Listed for Sale', 'UNK': 'Unknown'} %}
 {% extends 'default.html' %}
 {% block content %}
 {% include 'breadcrumb.html' %}
 {% if boat.status == 'LOST' -%}
-{% set owner_name = '' -%}
-{% set acq_date = '' -%}
-{% elif boat.status == 'UNK' or boat.owners | length == 0 %}
-{% set owner_name = '<strong class="unk">Unknown</strong><br/><small>Please contact {} if you know the owner</small>'.format(contact_asoa()) -%}
-{% set acq_date = '' -%}
-{% else %}
-{% set owner_name = boat.owners[0].owner_name | escape %}
-{% set acq_date   = boat.owners[0].acquired %}
-{% endif %}
+{%    set owner_name = '' -%}
+{%    set acq_date = '' -%}
+{% elif boat.status == 'UNK' or boat.owners | length == 0 -%}
+{%    set owner_name = '<strong class="unk">Unknown</strong><br/><small>Please contact {} if you know the owner</small>'.format(contact_asoa()) -%}
+{%    set acq_date = '' -%}
+{% else -%}
+{%    set owner_name = boat.owners[0].owner_name | escape -%}
+{%    set acq_date   = boat.owners[0].acquired -%}
+{% if boat.status == 'SALE'  and boat.sale_asof and boat.sale_link -%}
+      {% set boat_status = '<a href="{}">{}</a> (as of {})'.format(boat.sale_link, status[boat.status], boat.sale_asof) -%}
+{% else -%}
+{%    set boat_status = status[boat.status] -%}
+{% endif -%}
+{% endif -%}
 <h3>{{ boat.name }}</h3>
 <table class="table asoa-table detail-table">
 <tr><td>Boat Name</td><td>{{ boat.name }}</td></tr>
 <tr><td>Current Owner</td><td>{{ owner_name | safe }}</td></tr>
 {% if acq_date and acq_date | upper != 'NA' %}
-<tr><td>Acquired</td><td>{{ acq_date | safe }}</td></tr>
+<tr><td>Acquired</td><td>{{ acq_date }}</td></tr>
 {% endif %}
 <tr><td>Hull</td><td>{{ boat.hull }}</td></tr>
 <tr><td>Sail #</td><td>{{ boat.sailnum }}</td></tr>
@@ -26,7 +31,7 @@
 <tr><td>Color</td><td>{{ boat.color }}</td></tr>
 <tr><td>Engine</td><td>{{ [boat.engine_type, boat.engine_desc] | select | join('/')  }}</td></tr>
 <tr><td>Location</td><td>{{ boat.berth }}</td></tr>
-<tr><td>Status</td><td>{{ status[boat.status] }}</td></tr>
+<tr><td>Status</td><td>{{ boat_status | safe }}</td></tr>
 <tr><td>Latest Information</td><td>{{ boat.latest_info | markdown }}</td></tr>
 {% if boat.status == 'LOST' %}
 <tr><td>Epitaph</td><td>{{ boat.epitaph | markdown }}</td></tr>

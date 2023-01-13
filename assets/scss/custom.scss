@@ -83,9 +83,8 @@ h1 {
     vertical-align: middle;
   }
 
-  &.disclaimer {
+  &.disclaimer, &.db-meta {
     font-size: 0.85em;
-    padding: 1em;
   }
 }
 
@@ -93,15 +92,19 @@ h1 {
   background: lightgray;
 }
 
+.status-sale {
+  background: #79dfc1;
+}
+
 .status-unk {
-  background: #94f4f4;
+  background: #fecba1;
 }
 
 strong.unk {
   color: $alt_color;
 }
 
-span.status-unk, span.status-lost {
+span.status {
   display: inline-block;
   padding: 0 0.25em;
 }

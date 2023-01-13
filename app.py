@@ -10,6 +10,10 @@ import re
 
 import openpyxl as xl
 
+config = {
+  'db_path': 'data/asoa-roster.xlsx'
+}
+
 app = flask.Flask(__name__)
 # if being run via gunicorn, make us proxy-aware (assume Apache)
 if os.environ.get('_', '').endswith('gunicorn'):
@@ -39,6 +43,7 @@ def context_processor():
     return {
       # global variables
       'asoa_email': email,
+      'db_datestamp': datetime.utcfromtimestamp(os.path.getmtime(config['db_path'])).strftime('%m/%d/%Y %I:%M%p UTC'),
 
       # custom functions
       'contact_asoa': email_link
@@ -92,7 +97,7 @@ def db_load(id=None, q=None):
 
     '''
 
-    wb = xl.load_workbook(filename='data/asoa-roster.xlsx', read_only=True, data_only=True)
+    wb = xl.load_workbook(filename=config['db_path'], read_only=True, data_only=True)
     boats = wb['boats']
     owners = wb['owners']
     for ws in (boats,owners):
@@ -119,10 +124,13 @@ def db_load(id=None, q=None):
     boat_db = {}
     for row in boats.iter_rows(2):
         boat = {'owners': []}
-        for key in ['hull', 'name', 'status', 'rig', 'serial', 'color', 'engine_type', 'engine_desc', 'berth', 'epitaph', 'latest_info']:
+        for key in ['hull', 'name', 'status', 'sale_asof', 'sale_link', 'rig', 'serial', 'color', 'engine_type', 'engine_desc', 'berth', 'epitaph', 'latest_info']:
             boat[key] = get_value(boats, row, key)
 
         boat['hull'] = str(boat['hull'])
+        if type(boat['sale_asof']) is datetime:
+            boat['sale_asof'] = boat['sale_asof'].strftime('%-m/%-d/%Y')
+
         if boat['hull'] in boat_db:
             raise KeyError('Hull {} is listed multiple times in the database'.format(boat['hull']))
 

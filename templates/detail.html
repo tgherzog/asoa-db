@@ -12,11 +12,13 @@
 {% else -%}
 {%    set owner_name = boat.owners[0].owner_name | escape -%}
 {%    set acq_date   = boat.owners[0].acquired -%}
-{% if boat.status == 'SALE'  and boat.sale_asof and boat.sale_link -%}
+{% endif -%}
+{% if boat.status == 'SALE' and boat.sale_asof and boat.sale_link -%}
       {% set boat_status = '<a href="{}">{}</a> (as of {})'.format(boat.sale_link, status[boat.status], boat.sale_asof) -%}
+{% elif boat.status == 'SALE' and boat.sale_asof -%}
+      {% set boat_status = '{} (as of {})'.format(status[boat.status], boat.sale_asof) -%}
 {% else -%}
 {%    set boat_status = status[boat.status] -%}
-{% endif -%}
 {% endif -%}
 <h3>{{ boat.name }}</h3>
 <table class="table asoa-table detail-table">

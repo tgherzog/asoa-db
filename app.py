@@ -14,6 +14,8 @@ config = {
   'db_path': 'data/asoa-roster.xlsx'
 }
 
+config['db_lastmod'] = xl.load_workbook(filename=config['db_path']).properties.modified
+
 app = flask.Flask(__name__)
 # if being run via gunicorn, make us proxy-aware (assume Apache)
 if os.environ.get('_', '').endswith('gunicorn'):
@@ -43,7 +45,7 @@ def context_processor():
     return {
       # global variables
       'asoa_email': email,
-      'db_datestamp': datetime.utcfromtimestamp(os.path.getmtime(config['db_path'])).strftime('%m/%d/%Y %I:%M%p UTC'),
+      'db_datestamp': config['db_lastmod'].strftime('%m/%d/%Y %I:%M%p UTC'),
 
       # custom functions
       'contact_asoa': email_link

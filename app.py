@@ -27,6 +27,7 @@ assets.url_expire = False   # disable dynamic CSS loading
 scss = Bundle('custom.scss', filters='pyscss', output='css/custom.css')
 assets.register('scss_site', scss)
 
+
 @app.template_filter('markdown')
 def app_markdown_filter(s):
     
@@ -100,58 +101,68 @@ def db_load(id=None, q=None):
 
     '''
 
-    wb = xl.load_workbook(filename=config['db_path'], read_only=True, data_only=True)
-    boats = wb['boats']
-    owners = wb['owners']
-    for ws in (boats,owners):
-        ws.keys_ = {}
-        i = 0
-        for col in ws[1]:
-            ws.keys_[col.value] = i
-            i += 1
-
-    def get_value(ws, row, key):
-        if key not in ws.keys_:
-            raise KeyError('{} is not a column in {}'.format(key, ws.title))
-
-        return row[ws.keys_[key]].value or ''
-
     def filter_boats(item):
         '''Crude search functionality: search on boat name, berth, and owners
         '''
 
         (k,boat) = item
-        s = ' '.join([boat['name'], boat['berth']] + list(map(lambda x: x['owner_name'], boat['owners'])))
+        s = ' '.join([boat['boat_name'], boat['berth']] + list(map(lambda x: x['owner_name'], boat['owners'])))
         return q in s.lower()
 
+    def fmt_date(date):
+        if type(date) is datetime:
+            # 7/1 is a special date signifying that only the year has any confidence
+            # mm/1 means that only month and year have confidence so we omit the date
+            if date.month == 7 and date.day == 1:
+                return date.strftime('%Y')
+            elif date.day == 1:
+                return date.strftime('%-m/%Y')
+
+            return date.strftime('%-m/%-d/%Y')
+
+        return ''    
+
+    wb = xl.load_workbook(filename=config['db_path'], read_only=True, data_only=True)
+    boats = wb['boats']
     boat_db = {}
+    keys = {}
+    i = 0
+    for col in boats[1]:
+        keys[col.value] = i
+        i += 1
+
     for row in boats.iter_rows(2):
-        boat = {'owners': []}
-        for key in ['hull', 'name', 'status', 'sale_asof', 'sale_link', 'rig', 'serial', 'color', 'engine_type', 'engine_desc', 'berth', 'epitaph', 'latest_info']:
-            boat[key] = get_value(boats, row, key)
+        boat = {}
+        for key in ['hull', 'date', 'status', 'boat_name', 'sale_link', 'rig', 'serial', 'color', 'engine_type', 'engine_desc', 'berth', 'epitaph', 'latest_info']:
+            boat[key] = row[keys[key]].value or ''
 
         boat['hull'] = str(boat['hull'])
-        if type(boat['sale_asof']) is datetime:
-            boat['sale_asof'] = boat['sale_asof'].strftime('%-m/%-d/%Y')
 
-        if boat['hull'] in boat_db:
-            raise KeyError('Hull {} is listed multiple times in the database'.format(boat['hull']))
+        if not boat['hull']:
+            continue
 
-        if id is None or id == boat['hull']:
-            boat_db[boat['hull']] = boat
+        owner = {'hull': boat['hull'], 'acquired': fmt_date(boat['date'])}
 
-    for row in owners.iter_rows(2):
-        owner = {}
-        for key in ['hull', 'acquired', 'owner_name']:
-            owner[key] = get_value(owners, row, key)
+        for key in ['owner_name']:
+            owner[key] = row[keys[key]].value or ''
 
-        owner['hull'] = str(owner['hull'])
-        if type(owner['acquired']) is datetime:
-            # just show the year
-            owner['acquired'] = owner['acquired'].strftime('%Y')
+        boat['date'] = fmt_date(boat['date'])
 
-        if owner['hull'] in boat_db:
-            boat_db[owner['hull']]['owners'].insert(0, owner)
+        hull = boat['hull']
+        if boat_db.get(hull):
+            # Prior record exists: append owner to front and merge more recent fields
+            if boat['status'] in ['GOOD', 'RENO']:    
+                boat_db[hull]['owners'].insert(0, owner)
+
+            for k,v in boat.items():
+                if v:
+                    boat_db[hull][k] = v
+        else:
+            boat['owners'] = []
+            if boat['status'] in ['GOOD', 'RENO']:
+                boat['owners'].append(owner)
+
+            boat_db[hull] = boat
 
     if id:
         return boat_db.get(id, {})

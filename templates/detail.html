@@ -1,5 +1,5 @@
 {% set page_title = boat.name %}
-{% set status = {'GOOD': 'Good', 'LOST': 'Lost', 'RENO': 'Being Renovated', 'SALE': 'Listed for Sale', 'UNK': 'Unknown'} %}
+{% set status = {'GOOD': 'In Service', 'LOST': 'Lost', 'RENO': 'Being Renovated', 'SALE': 'Listed for Sale', 'UNK': 'Unknown'} %}
 {% extends 'default.html' %}
 {% block content %}
 {% include 'breadcrumb.html' %}
@@ -11,20 +11,20 @@
 {%    set acq_date = '' -%}
 {% else -%}
 {%    set owner_name = boat.owners[0].owner_name | escape -%}
-{%    set acq_date   = boat.owners[0].acquired -%}
+{%    set acq_date   = boat.owners[0].acquired or 'NA' -%}
 {% endif -%}
-{% if boat.status == 'SALE' and boat.sale_asof and boat.sale_link -%}
-      {% set boat_status = '<a href="{}">{}</a> (as of {})'.format(boat.sale_link, status[boat.status], boat.sale_asof) -%}
-{% elif boat.status == 'SALE' and boat.sale_asof -%}
-      {% set boat_status = '{} (as of {})'.format(status[boat.status], boat.sale_asof) -%}
+{% if boat.status == 'SALE' and boat.date and boat.sale_link -%}
+      {% set boat_status = '<a href="{}">{}</a> (as of {})'.format(boat.sale_link, status[boat.status], boat.date) -%}
+{% elif boat.status == 'SALE' and boat.date -%}
+      {% set boat_status = '{} (as of {})'.format(status[boat.status], boat.date) -%}
 {% else -%}
 {%    set boat_status = status[boat.status] -%}
 {% endif -%}
-<h3>{{ boat.name }}</h3>
+<h3>{{ boat.boat_name }}</h3>
 <table class="table asoa-table detail-table">
-<tr><td>Boat Name</td><td>{{ boat.name }}</td></tr>
+<tr><td>Boat Name</td><td>{{ boat.boat_name }}</td></tr>
 <tr><td>Current Owner</td><td>{{ owner_name | safe }}</td></tr>
-{% if acq_date and acq_date | upper != 'NA' %}
+{% if acq_date -%}
 <tr><td>Acquired</td><td>{{ acq_date }}</td></tr>
 {% endif %}
 <tr><td>Hull</td><td>{{ boat.hull }}</td></tr>
@@ -38,14 +38,14 @@
 {% if boat.status == 'LOST' %}
 <tr><td>Epitaph</td><td>{{ boat.epitaph | markdown }}</td></tr>
 {% endif %}
-{% if boat.status in ['LOST', 'UNK'] or boat.owners | length > 1 %}
-<tr><td>Owner History</td>
+{% if boat.owners | length > 1 %}
+<tr><td>Owner History<br/><small>Most recent first</small></td>
 <td>
 {% if boat.owners | length > 0 %}
 <table class="owners">
 <tr><th>Name</th><th class="text-center">Acquired</th></tr>
 {% for owner in boat.owners %}
-<tr><td>{{ owner.owner_name }}</td><td class="text-center">{{ owner.acquired }}</td></tr>
+<tr><td>{{ owner.owner_name }}</td><td class="text-center">{{ owner.acquired or 'NA' }}</td></tr>
 {% endfor %}
 </td></tr>
 </table>

@@ -20,17 +20,17 @@ If you have information about these boats, please <a target=_blank href="{{ db_u
 {% if boats | length > 0 %}
 <table class="table asoa-table">
 <tr><th class="hull">Hull</th><th class="name">Name</th><th class="owner">Owned By</th></tr>
-{% for hull,boat in boats.items() %}
+{% for hull,boat in boats.items() -%}
 {% if boat.status == 'LOST' -%}
 {% set owner_name = '' -%}
-{% elif boat.status != 'UNK' and boat.owners | length > 0 %}
-{% set owner_name = boat.owners[0].owner_name %}
-{% else %}
-{% set owner_name = '<strong class="unk">Unknown<strong>' %}
-{% endif %}
+{% elif boat.status == 'UNK' or boat.owners | length == 0 -%}
+{% set owner_name = '<strong class="unk">Unknown<strong>' -%}
+{% else -%}
+{% set owner_name = boat.owners[0].owner_name -%}
+{% endif -%}
 <tr class="{{ 'status-' + boat.status | default('none') | lower }}">
     <td class="hull"><a href="/detail/{{ hull }}">{{ hull }}</td>
-    <td class="name"><a href="/detail/{{ hull }}">{{ boat.name }}</a></td>
+    <td class="name"><a href="/detail/{{ hull }}">{{ boat.boat_name }}</a></td>
     <td class="owner">{{ owner_name | safe }}</td>
 </tr>
 {% endfor %}

@@ -11,10 +11,22 @@ The python component simply defines endpoints, loads the spreadsheet
 and provides rudimentary search. Most of the "guts" of the program are
 implemented through [jinja templates](templates).
 
-If your unfamiliar with Flask, the key thing to understand in `app.py` is that it mostly
+If you're unfamiliar with Flask, the key thing to understand in `app.py` is that it mostly
 just loads the spreadsheet and uses `render_template` to load one of the Jinja
 templates. The extra parameters passed through `render_template` define the names and
 values of variables in the template.
+
+### Member-only Access ###
+
+The app can provide access to "member-only" data and options, such as phone numbers,
+postal and email addresses, and a downloadable Excel version of the roster. This is
+enabled by running the server with an environmental variable set, for example:
+
+    # flask
+    asoa_access_mode=members flask run
+    
+    # gunicorn
+    asoa_access_mode=members gunicorn app:app
 
 [flask]: https://flask.palletsprojects.com/
 [jinja]: https://jinja.palletsprojects.com/

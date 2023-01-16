@@ -12,5 +12,12 @@
   <span>or</span>
   <a class="btn btn-primary" href="/list">Show All Seabreezes</a>
 </div>
+{% if access_mode == "members" -%}
+<div class="mb-3">
+<h3>Download Access</h3>
+<p class="px-4">ASOA members may <a href="/download/members">download the member list</a> as an Excel file.
+Access and use are restricted to ASOA members only for non-commercial purposes.</p>
+</div>
+{% endif -%}
 </form>
 {% endblock %}

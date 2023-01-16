@@ -6,9 +6,12 @@ import markupsafe
 from datetime import datetime
 from markdown import markdown
 import os
-import re
+import io
+import tempfile
 
 import openpyxl as xl
+from openpyxl.utils import get_column_letter
+from openpyxl.styles import Alignment, Font
 
 config = {
   'db_path': 'data/asoa-roster.xlsx'
@@ -16,12 +19,16 @@ config = {
 
 config['db_lastmod'] = xl.load_workbook(filename=config['db_path']).properties.modified
 
+# set "asoa_access_mode=members" as an environment variable to enable privileged access
+# to member-only database content and features
+config['access_mode'] = os.environ.get('asoa_access_mode', 'public')
+
 app = flask.Flask(__name__)
 # if being run via gunicorn, make us proxy-aware (assume Apache)
 if os.environ.get('_', '').endswith('gunicorn'):
     app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_prefix=1)
 assets = Environment(app)
-assets.url = app.static_url_path
+# assets.url = app.static_url_path
 assets.append_path('assets/scss')
 assets.url_expire = False   # disable dynamic CSS loading
 scss = Bundle('custom.scss', filters='pyscss', output='css/custom.css')
@@ -45,6 +52,7 @@ def context_processor():
 
     return {
       # global variables
+      'access_mode': config['access_mode'],
       'asoa_email': email,
       'db_datestamp': config['db_lastmod'].strftime('%m/%d/%Y %I:%M%p UTC'),
       'db_update_form': 'https://forms.gle/usB89vY9sc5U6adG8',
@@ -91,7 +99,68 @@ def app_search():
 
     return flask.redirect(flask.url_for('app_list'))
 
-def db_load(id=None, q=None):
+def download_member_file():
+
+    wb = xl.Workbook()
+    ws = wb[wb.sheetnames[0]]
+    ws.title = 'members'
+    hdrFont = Font(bold=True)
+
+    fields = ['hull', 'boat_name', 'status', 'sailnum', 'rig', 'owner_name', 'acquired', 'address1', 'address2', 'phone', 'email', 'berth', 'latest_info', 'epitaph']
+    for n in range(len(fields)):
+        cell = ws.cell(1, n+1)
+        cell.value = fields[n]
+        cell.font = hdrFont
+        ws.column_dimensions[get_column_letter(n+1)].width = 10
+
+    ws.cell(1, fields.index('hull')+1).alignment = Alignment(horizontal='center')
+
+    row = 2
+    (db, db_props) = db_load(raw=True, properties=True)
+
+    for hull,boat in db.items():
+        owner = boat['owners'][0] if len(boat['owners']) > 0 else {}
+        for k in ['owner_name', 'acquired']:
+            boat[k] = owner.get(k)
+
+        for n in range(len(fields)):
+            ws.cell(row, n+1).value = boat[fields[n]]
+
+        # improve formatting of a few  columns
+        ws.cell(row, fields.index('acquired')+1).number_format = 'm/d/yyyy;@'
+        ws.cell(row, fields.index('hull')+1).alignment = Alignment(horizontal='center')
+        row += 1
+
+    # spiff up the column formatting
+    ws.column_dimensions[get_column_letter(fields.index('boat_name')+1)].width *= 2
+    ws.column_dimensions[get_column_letter(fields.index('owner_name')+1)].width *= 2.5
+    ws.column_dimensions[get_column_letter(fields.index('address1')+1)].width *= 2
+    ws.column_dimensions[get_column_letter(fields.index('address2')+1)].width *= 2
+    ws.column_dimensions[get_column_letter(fields.index('email')+1)].width *= 2
+    ws.column_dimensions[get_column_letter(fields.index('berth')+1)].width *= 2
+    ws.column_dimensions[get_column_letter(fields.index('phone')+1)].width *= 1.5
+    ws.column_dimensions[get_column_letter(fields.index('acquired')+1)].width *= 1.25
+
+    ws.freeze_panes = ws['A2']
+
+    with tempfile.NamedTemporaryFile() as tmp:
+        wb.save(tmp.name)
+        tmp.seek(0)
+        stream = tmp.read()
+        tmp.close()
+        byteStream = io.BytesIO(stream)
+
+        filename = 'asoa-members-{}.xlsx'.format(db_props.modified.strftime('%Y-%m-%d'))
+        return flask.send_file(byteStream,
+            mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            download_name=filename, as_attachment=True)
+
+
+if config['access_mode'] == 'members':
+    app.add_url_rule('/download/members', view_func=download_member_file)
+
+
+def db_load(id=None, q=None, raw=False, properties=False):
     '''Loads the database from a spreadsheet.
       
        id:      hull number. If defined, the function returns a single record (dict), otherwise
@@ -110,6 +179,9 @@ def db_load(id=None, q=None):
         return q in s.lower()
 
     def fmt_date(date):
+        if raw:
+            return date
+
         if type(date) is datetime:
             # 7/1 is a special date signifying that only the year has any confidence
             # mm/1 means that only month and year have confidence so we omit the date
@@ -133,10 +205,11 @@ def db_load(id=None, q=None):
 
     for row in boats.iter_rows(2):
         boat = {}
-        for key in ['hull', 'date', 'status', 'boat_name', 'sale_link', 'rig', 'serial', 'color', 'engine_type', 'engine_desc', 'berth', 'epitaph', 'latest_info']:
+        for key in ['hull', 'date', 'status', 'boat_name', 'sale_link', 'sailnum', 'rig', 'serial', 'color', 'engine_type', 'engine_desc', 'berth', 'epitaph', 'latest_info', 'address1', 'address2', 'phone', 'email']:
             boat[key] = row[keys[key]].value or ''
 
-        boat['hull'] = str(boat['hull'])
+        if not raw:
+            boat['hull'] = str(boat['hull'])
 
         if not boat['hull']:
             continue
@@ -169,5 +242,8 @@ def db_load(id=None, q=None):
     elif q:
         q = q.lower()
         return dict(filter(filter_boats, boat_db.items()))
+
+    if properties:
+        return (boat_db, wb.properties)
 
     return boat_db

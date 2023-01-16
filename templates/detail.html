@@ -24,6 +24,11 @@
 <table class="table asoa-table detail-table">
 <tr><td>Boat Name</td><td>{{ boat.boat_name }}</td></tr>
 <tr><td>Current Owner</td><td>{{ owner_name | safe }}</td></tr>
+{% if access_mode == "members" -%}
+<tr><td>Address</td><td>{{ [boat.address1, boat.address2] | select | join('<br/>' | safe)  }}</td></tr>
+<tr><td>Phone</td><td>{{ boat.phone }}</td></tr>
+<tr><td>Email</td><td>{{ boat.email }}</td></tr>
+{% endif -%}
 {% if acq_date -%}
 <tr><td>Acquired</td><td>{{ acq_date }}</td></tr>
 {% endif %}

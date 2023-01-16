@@ -146,6 +146,14 @@ div.restricted {
   text-align: center;
 }
 
+.legend {
+  font-size: 0.875em;
+  margin-bottom: 0.5em;
+  li {
+    margin-bottom: 0.25em;
+  }
+}
+
 @media (max-width: 768px) {
   .container {
     div.image-wrapper.float {

@@ -7,16 +7,18 @@
 {% if search_term %}
 <p class="search_term">You searched for <em>"{{ search_term }}"</em></p>
 {% endif %}
+<ul class="legend">
 {% if boats.values() | selectattr("status", "eq", "UNK") | list | length > 0 %}
-<p><small>Boats <span class="status status-unk">displayed in orange</span> are known to have been sold or listed for sale, but there is no information about the current owner.
-If you have information about these boats, please <a target=_blank href="{{ db_update_form }}">use this online form</a> to send us updates.</small></p>
+<li><span class="status status-unk">Orange rows</span> are boats known to have been sold or listed for sale, but there is no information about the current owner.</li>
 {% endif %}
 {% if boats.values() | selectattr("status", "eq", "SALE") | list | length > 0 %}
-<p><small>Boats <span class="status status-sale">displayed in green</span> are listed for sale according to latest reports. View the boat record for more details.</small></p>
+<li><span class="status status-sale">Green rows</span> are boats listed for sale according to latest reports. View the boat record for more details.</li>
 {% endif %}
 {% if boats.values() | selectattr("status", "eq", "LOST") | list | length > 0 %}
-<p><small>Boats <span class="status status-lost">displayed in gray</span> are known to be lost. View the boat record for more details.</small></p>
+<li><span class="status status-lost">Gray rows</span> are boats known to be lost. View the boat record for more details.</li>
 {% endif %}
+</ul></small>
+<p class="legend"><a href="{{ db_update_form }}" target=_blank>Click here</a> to provide updated information about any boat listed here.</small></p>
 {% if boats | length > 0 %}
 <table class="table asoa-table">
 <tr><th class="hull">Hull</th><th class="name">Name</th><th class="owner">Owned By</th></tr>

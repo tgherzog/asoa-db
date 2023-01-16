@@ -28,6 +28,11 @@ enabled by running the server with an environmental variable set, for example:
     # gunicorn
     asoa_access_mode=members gunicorn app:app
 
+    # in a systemctl control file (/etc/systemd/system/*.service)
+    Environment="asoa_access_mode=members"
+    ExecStart=/usr/local/bin/gunicorn --bind 127.0.0.1:8001 -w 3 app:app
+
+
 [flask]: https://flask.palletsprojects.com/
 [jinja]: https://jinja.palletsprojects.com/
 [bootstrap]: https://getbootstrap.com/

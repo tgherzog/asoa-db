@@ -140,6 +140,12 @@ table.owners {
   font-weight: bold;
 }
 
+div.restricted {
+  font-weight: bold;
+  color: #f44;
+  text-align: center;
+}
+
 @media (max-width: 768px) {
   .container {
     div.image-wrapper.float {

@@ -30,6 +30,9 @@
     <!-- END site nav -->
 
     <div class="container">
+{% if access_mode == "members" -%}
+        <div class="restricted">ASOA Members Only</div>
+{% endif -%}
     {% block content %}
     {% endblock %}
     </div>

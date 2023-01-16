@@ -116,9 +116,8 @@ def download_member_file():
     ws.cell(1, fields.index('hull')+1).alignment = Alignment(horizontal='center')
 
     row = 2
-    (db, db_props) = db_load(raw=True, properties=True)
 
-    for hull,boat in db.items():
+    for hull,boat in db_load(raw=True).items():
         owner = boat['owners'][0] if len(boat['owners']) > 0 else {}
         for k in ['owner_name', 'acquired']:
             boat[k] = owner.get(k)
@@ -150,7 +149,7 @@ def download_member_file():
         tmp.close()
         byteStream = io.BytesIO(stream)
 
-        filename = 'asoa-members-{}.xlsx'.format(db_props.modified.strftime('%Y-%m-%d'))
+        filename = 'asoa-members-{}.xlsx'.format(config['db_lastmod'].strftime('%Y-%m-%d'))
         return flask.send_file(byteStream,
             mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
             download_name=filename, as_attachment=True)
@@ -160,7 +159,7 @@ if config['access_mode'] == 'members':
     app.add_url_rule('/download/members', view_func=download_member_file)
 
 
-def db_load(id=None, q=None, raw=False, properties=False):
+def db_load(id=None, q=None, raw=False):
     '''Loads the database from a spreadsheet.
       
        id:      hull number. If defined, the function returns a single record (dict), otherwise
@@ -242,8 +241,5 @@ def db_load(id=None, q=None, raw=False, properties=False):
     elif q:
         q = q.lower()
         return dict(filter(filter_boats, boat_db.items()))
-
-    if properties:
-        return (boat_db, wb.properties)
 
     return boat_db

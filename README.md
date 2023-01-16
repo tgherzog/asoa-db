@@ -19,7 +19,9 @@ values of variables in the template.
 ### Member-only Access ###
 
 The app can provide access to "member-only" data and options, such as phone numbers,
-postal and email addresses, and a downloadable Excel version of the roster. This is
+postal and email addresses, and a downloadable Excel version of the roster. Proper
+measures should be taken if the database is run on public servers, such as adding
+password protection. "Members mode" is
 enabled by running the server with an environmental variable set, for example:
 
     # flask

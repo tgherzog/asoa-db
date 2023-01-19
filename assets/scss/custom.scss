@@ -23,16 +23,16 @@ footer {
   padding: 1.5em;
 }
 
-h1, h2, h3 {
-  margin-top: 2em;
+h1, h2, h3, h4 {
   color: rgb(64, 128, 128);
 }
 
-h1 {
-  text-align: center;
-}
-
 .container {
+  h1, h2, h3 {
+    margin-top: 2em;
+    text-align: center;
+  }
+
   div.image-wrapper {
     width: 90%;
     max-width: $img_width;
@@ -148,6 +148,37 @@ div.restricted {
   font-weight: bold;
   color: #f44;
   text-align: center;
+}
+
+div.flash-messages ul {
+  background: #aea;
+  list-style-type: none;
+  margin: 1em 0;
+  padding: 0;
+
+  li {
+    background: #aea;
+    padding: 1em;
+  }
+
+  li.error {
+    background: #eaa;
+  }
+}
+
+div.modal {
+  .input-number {
+    width: unset;
+  }
+
+  p.info {
+    font-size: 0.85em;
+    line-height: 1.1em;
+  }
+}
+
+.info-trigger {
+  font-size: 0.85em;
 }
 
 .legend {

@@ -12,26 +12,23 @@
   <span>or</span>
   <a class="btn btn-primary" href="/list">Show All Seabreezes</a>
 </div>
+</form>
 
 <h3>About This Database</h3>
 <p class="px-4">
 The <a href="//alliedseabreeze35.org">Allied Seabreeze Owners Association</a> (ASOA) maintains
 this database of all known Allied Seabreezes built between 1963 and 1972, their
 current status and owners.
-{% if access_mode == "members" -%}
-Use of this database is restricted to members of the ASOA. A public
-version (without contact information) is
-<a href="https://asoadb.alliedseabreeze35.org">available here</a>.
-{% else -%}
-ASOA members can request access to the "members only" version (with contact information) {{ contact_asoa('via email') }}.
-{% endif -%}
-For more information about the Allied Seabreeze and its history, <a href="//alliedseabreeze35.org">visit the website</a>.
+For more information about the Allied Seabreeze and its history, <a href="//alliedseabreeze35.org">visit the ASOA website</a>.
 </p>
-
 {% if access_mode == "members" -%}
 <h3>Download Access</h3>
 <p class="px-4">ASOA members may <a href="/download/members">download the member list</a> as an Excel file.
 Authorized access is limited to ASOA members only for their non-commercial use.</p>
+{% else %}
+<p class="px-4">ASOA members may
+  <a data-bs-toggle="modal" data-bs-target="#login-form" href="">login here</a>.</p>
 {% endif -%}
-</form>
+
 {% endblock %}
+

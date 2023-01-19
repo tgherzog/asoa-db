@@ -18,7 +18,7 @@
           <span class="navbar-toggler-icon"/>
         </button>
         <div class="collapse navbar-collapse" id="site-nav">
-{% set nav_menu = {'Home': '', 'History': 'history.html', 'Library': 'library.html', 'Members': 'members.html'} %}
+{% set nav_menu = {'Home': '', 'History': 'history.html', 'Gallery': 'gallery.html', 'Library': 'library.html', 'Members': 'members.html'} %}
           <ul class="navbar-nav">
 {% for title,link in nav_menu.items() %}
             <li class="nav-item"><a class="nav-link" href="http://alliedseabreeze35.org/{{link}}">{{title}}</a></li>
@@ -29,10 +29,13 @@
     </nav>
     <!-- END site nav -->
 
-    <div class="container">
 {% if access_mode == "members" -%}
-        <div class="restricted">ASOA Members Only</div>
+    <div class="container restricted">
+    ASOA Members Only
+    </div>
 {% endif -%}
+
+    <div class="container">
     {% block content %}
     {% endblock %}
     </div>

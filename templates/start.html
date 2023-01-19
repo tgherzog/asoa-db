@@ -12,6 +12,7 @@
   <span>or</span>
   <a class="btn btn-primary" href="/list">Show All Seabreezes</a>
 </div>
+</form>
 
 <h3>About This Database</h3>
 <p class="px-4">
@@ -25,7 +26,7 @@ version (without contact information) is
 {% else -%}
 ASOA members can request access to the "members only" version (with contact information) {{ contact_asoa('via email') }}.
 {% endif -%}
-For more information about the Allied Seabreeze and its history, <a href="//alliedseabreeze35.org">visit the website</a>.
+For more information about the Allied Seabreeze and its history, <a href="//alliedseabreeze35.org">visit the ASOA website</a>.
 </p>
 
 {% if access_mode == "members" -%}
@@ -33,5 +34,4 @@ For more information about the Allied Seabreeze and its history, <a href="//alli
 <p class="px-4">ASOA members may <a href="/download/members">download the member list</a> as an Excel file.
 Authorized access is limited to ASOA members only for their non-commercial use.</p>
 {% endif -%}
-</form>
 {% endblock %}

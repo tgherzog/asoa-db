@@ -21,7 +21,7 @@
 <p class="legend"><a href="{{ db_update_form }}" target=_blank>Click here</a> to provide updated information about any boat listed here.</small></p>
 {% if boats | length > 0 %}
 <table class="table asoa-table">
-<tr><th class="hull">Hull</th><th class="name">Name</th><th class="owner">Owned By</th></tr>
+<tr><th class="hull">Hull</th><th class="boat_name">Name</th><th class="owner_name">Owned By</th></tr>
 {% for hull,boat in boats.items() -%}
 {% if boat.status == 'LOST' -%}
 {% set owner_name = '' -%}
@@ -32,8 +32,8 @@
 {% endif -%}
 <tr class="{{ 'status-' + boat.status | default('none') | lower }}">
     <td class="hull"><a href="/detail/{{ hull }}">{{ hull }}</td>
-    <td class="name"><a href="/detail/{{ hull }}">{{ boat.boat_name }}</a></td>
-    <td class="owner">{{ owner_name | safe }}</td>
+    <td class="boat_name"><a href="/detail/{{ hull }}">{{ boat.boat_name }}</a></td>
+    <td class="owner_name">{{ owner_name | safe }}</td>
 </tr>
 {% endfor %}
 </table>

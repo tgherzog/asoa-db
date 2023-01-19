@@ -204,7 +204,7 @@ def db_load(id=None, q=None, raw=False):
 
     for row in boats.iter_rows(2):
         boat = {}
-        for key in ['hull', 'date', 'status', 'boat_name', 'sale_link', 'sailnum', 'rig', 'serial', 'color', 'engine_type', 'engine_desc', 'berth', 'epitaph', 'latest_info', 'address1', 'address2', 'phone', 'email']:
+        for key in ['hull', 'date', 'status', 'boat_name', 'sale_link', 'sailnum', 'rig', 'color', 'engine_type', 'engine_desc', 'berth', 'epitaph', 'latest_info', 'address1', 'address2', 'phone', 'email']:
             boat[key] = row[keys[key]].value or ''
 
         if not raw:

@@ -5,13 +5,14 @@
 {% include 'breadcrumb.html' %}
 {% if boat.status == 'LOST' -%}
 {%    set owner_name = '' -%}
-{%    set acq_date = '' -%}
+{%    set owner = {} -%}
 {% elif boat.status == 'UNK' or boat.owners | length == 0 -%}
 {%    set owner_name = '<strong class="unk">Unknown</strong><br/><small>Please <a target=_blank href="{}">complete this online form</a> if you know the owner</small>'.format(db_update_form) -%}
-{%    set acq_date = '' -%}
+{%    set owner = {} -%}
 {% else -%}
-{%    set owner_name = boat.owners[0].owner_name | escape -%}
-{%    set acq_date   = boat.owners[0].acquired or 'NA' -%}
+{%    set owner = boat.owners[0] -%}
+{%    set _ = owner.update({'acquired': owner.acquired or 'NA'}) -%}
+{%    set owner_name = owner.owner_name | escape -%}
 {% endif -%}
 {% if boat.status == 'SALE' and boat.date and boat.sale_link -%}
       {% set boat_status = '<a href="{}">{}</a> (as of {})'.format(boat.sale_link, status[boat.status], boat.date) -%}
@@ -25,12 +26,12 @@
 <tr><td>Boat Name</td><td class="boat_name">{{ boat.boat_name }}</td></tr>
 <tr><td>Current Owner</td><td class="owner_name">{{ owner_name | safe }}</td></tr>
 {% if access_mode == "members" -%}
-<tr><td>Address</td><td>{{ [boat.address1, boat.address2] | select | join('<br/>' | safe)  }}</td></tr>
-<tr><td>Phone</td><td>{{ boat.phone }}</td></tr>
-<tr><td>Email</td><td>{{ boat.email }}</td></tr>
+<tr><td>Address</td><td>{{ [owner.address1, owner.address2] | select | join('<br/>' | safe)  }}</td></tr>
+<tr><td>Phone</td><td>{{ owner.phone }}</td></tr>
+<tr><td>Email</td><td>{{ owner.email }}</td></tr>
 {% endif -%}
-{% if acq_date -%}
-<tr><td>Acquired</td><td>{{ acq_date }}</td></tr>
+{% if owner.acquired -%}
+<tr><td>Acquired</td><td>{{ owner.acquired }}</td></tr>
 {% endif %}
 <tr><td>Hull</td><td>{{ boat.hull }}</td></tr>
 <tr><td>Sail #</td><td>{{ boat.sailnum }}</td></tr>

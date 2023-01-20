@@ -119,7 +119,7 @@ def download_member_file():
 
     for hull,boat in db_load(raw=True).items():
         owner = boat['owners'][0] if len(boat['owners']) > 0 else {}
-        for k in ['owner_name', 'acquired']:
+        for k in ['owner_name', 'acquired', 'address1', 'address2', 'phone', 'email']:
             boat[k] = owner.get(k)
 
         for n in range(len(fields)):
@@ -204,7 +204,7 @@ def db_load(id=None, q=None, raw=False):
 
     for row in boats.iter_rows(2):
         boat = {}
-        for key in ['hull', 'date', 'status', 'boat_name', 'sale_link', 'sailnum', 'rig', 'color', 'engine_type', 'engine_desc', 'berth', 'epitaph', 'latest_info', 'address1', 'address2', 'phone', 'email']:
+        for key in ['hull', 'date', 'status', 'boat_name', 'sale_link', 'sailnum', 'rig', 'color', 'engine_type', 'engine_desc', 'berth', 'epitaph', 'latest_info']:
             boat[key] = row[keys[key]].value or ''
 
         if not raw:
@@ -215,7 +215,7 @@ def db_load(id=None, q=None, raw=False):
 
         owner = {'hull': boat['hull'], 'acquired': fmt_date(boat['date'])}
 
-        for key in ['owner_name']:
+        for key in ['owner_name', 'address1', 'address2', 'phone', 'email']:
             owner[key] = row[keys[key]].value or ''
 
         boat['date'] = fmt_date(boat['date'])

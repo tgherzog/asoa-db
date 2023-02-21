@@ -42,7 +42,16 @@ def app_markdown_filter(s):
 
 @app.context_processor
 def context_processor():
+    request = flask.request
+
     email = 'seabreezeowners@gmail.com'
+    public_url = request.url.split('://')[1]
+    if request.host.split('.')[0] == 'asoadb':
+        private_url = public_url.split('.', maxsplit=1)
+        private_url[0] = 'members'
+        private_url = '.'.join(private_url)
+    else:
+        private_url = public_url
 
     def email_link(title=None):
         if not title:
@@ -54,6 +63,8 @@ def context_processor():
       # global variables
       'access_mode': config['access_mode'],
       'asoa_email': email,
+      'public_url': public_url,
+      'private_url': private_url,
       'db_datestamp': config['db_lastmod'].strftime('%m/%d/%Y %I:%M%p UTC'),
       'db_update_form': 'https://forms.gle/usB89vY9sc5U6adG8',
 

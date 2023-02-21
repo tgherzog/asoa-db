@@ -40,7 +40,12 @@
     {% endblock %}
     </div>
 
+{% if access_mode == 'members' -%}
     <div class="container db-meta mt-5 mb-3">
+    Public link to this page: <a href="//{{ private_url }}">{{ private_url }}</a>
+    </div>
+{% endif -%}
+    <div class="container db-meta mb-3">
     Database last updated: {{ db_datestamp }}
     </div>
     <div class="container disclaimer mb-3">

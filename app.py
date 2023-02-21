@@ -46,9 +46,9 @@ def context_processor():
 
     email = 'seabreezeowners@gmail.com'
     public_url = request.url.split('://')[1]
-    if request.host.split('.')[0] == 'asoadb':
+    if request.host.split('.')[0] == 'members':
         private_url = public_url.split('.', maxsplit=1)
-        private_url[0] = 'members'
+        private_url[0] = 'asoadb'
         private_url = '.'.join(private_url)
     else:
         private_url = public_url
